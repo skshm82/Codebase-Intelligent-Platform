@@ -10,8 +10,8 @@ export const config = {
   geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
   geminiEmbeddingModel: process.env.GEMINI_EMBEDDING_MODEL || 'text-embedding-004',
   
-  // text-embedding-004 produces 768-dimensional vectors
-  embeddingDimension: parseInt(process.env.EMBEDDING_DIMENSION || '768', 10),
+  // gemini-embedding-001 produces 3072-dimensional vectors by default
+  embeddingDimension: parseInt(process.env.EMBEDDING_DIMENSION || '3072', 10),
   
   // Directory where repositories will be temporarily cloned
   reposDir: path.resolve(process.cwd(), '.repos'),

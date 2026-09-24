@@ -38,7 +38,20 @@ export async function initDb() {
       );
     `);
 
-    // 3. Create documents table with vector embedding column
+    // 3. Check if documents table exists and verify vector dimension matches
+    const tableCheck = await client.query(`
+      SELECT a.atttypmod 
+      FROM pg_attribute a 
+      JOIN pg_class c ON a.attrelid = c.oid 
+      WHERE c.relname = 'documents' AND a.attname = 'embedding';
+    `);
+
+    if (tableCheck.rows.length > 0 && tableCheck.rows[0].atttypmod !== config.embeddingDimension) {
+      console.log(`[DB] Vector dimension changed (was ${tableCheck.rows[0].atttypmod}, now ${config.embeddingDimension}). Recreating documents table...`);
+      await client.query('DROP TABLE IF EXISTS documents CASCADE;');
+    }
+
+    // 4. Create documents table with vector embedding column
     await client.query(`
       CREATE TABLE IF NOT EXISTS documents (
         id UUID PRIMARY KEY,
@@ -52,7 +65,7 @@ export async function initDb() {
       );
     `);
 
-    // 4. Create index on repository_id for fast filtering
+    // 5. Create index on repository_id for fast filtering
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_documents_repository_id 
       ON documents (repository_id);
