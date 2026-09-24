@@ -6,7 +6,10 @@ const { Pool } = pg;
 
 export const pool = new Pool({
   connectionString: config.databaseUrl,
-  ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : false
+  // Auto-enable SSL for cloud providers (Neon, Supabase, etc.)
+  ssl: config.databaseUrl.includes('localhost') || config.databaseUrl.includes('127.0.0.1')
+    ? false
+    : { rejectUnauthorized: false }
 });
 
 /**
