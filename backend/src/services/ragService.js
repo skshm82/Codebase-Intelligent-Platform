@@ -64,15 +64,31 @@ export async function askQuestion(repositoryId, question) {
   // 3. Build prompt with retrieved context
   const contextPrompt = buildContextPrompt(question, chunks);
 
-  // 4. Call Gemini LLM
+  // 4. Call Gemini LLM (with retry for transient errors)
   const ai = getGenAI();
   const model = ai.getGenerativeModel({
     model: config.geminiModel,
     systemInstruction: SYSTEM_PROMPT
   });
 
-  const result = await model.generateContent(contextPrompt);
-  const answer = result.response.text();
+  let answer;
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await model.generateContent(contextPrompt);
+      answer = result.response.text();
+      break;
+    } catch (err) {
+      const isRetryable = err.message && (err.message.includes('503') || err.message.includes('429') || err.message.includes('high demand'));
+      if (isRetryable && attempt < maxRetries) {
+        const delay = 1000 * Math.pow(2, attempt - 1); // 1s, 2s, 4s
+        console.log(`[CHAT] Gemini API error (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms...`);
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
 
   // 5. Extract unique source file references
   const seenFiles = new Set();
