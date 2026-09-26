@@ -9,7 +9,7 @@ export default function Header() {
         borderBottom: '1px solid var(--border-default)',
       }}
     >
-      <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+      <div className="mx-auto max-w-3xl px-6 py-4 flex items-center justify-between">
         {/* Logo & Title */}
         <div className="flex items-center gap-3.5">
           <div

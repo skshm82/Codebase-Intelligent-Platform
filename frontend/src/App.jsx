@@ -10,13 +10,13 @@ export default function App() {
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
       <Header />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-6 py-10 space-y-8">
+      <main className="flex-1 mx-auto w-full max-w-3xl px-6 py-10 space-y-8">
         <RepoSection onRepoIndexed={(data) => setRepo(data)} />
         <ChatSection repo={repo} />
       </main>
 
       <footer style={{ borderTop: '1px solid var(--border-default)' }}>
-        <div className="mx-auto max-w-5xl px-6 py-5 flex items-center justify-between">
+        <div className="mx-auto max-w-3xl px-6 py-5 flex flex-col items-center justify-center gap-2 text-center">
           <div className="flex items-center gap-2">
             <div
               className="w-1.5 h-1.5 rounded-full"
